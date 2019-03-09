@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" >
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=utf8" />
+		<property name="username" value="root" />
+		<property name="password" value="123456" />
+	</bean>
+	
+	<!-- 配置平台事务管理器 -->
+	<bean id="platformTransactionManager" 
+			 class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" /> 
+	</bean>
+	
+	<!-- 提供对事务的配置 ( Advice ) Advice不需要由我们完成只要提供配置就好了，会根据配置生成相应的事物配置的方法-->
+	<!--  no-rollback-for 设置不回滚 isolation 隔离级别 tx:method 与事物的那些方法-->
+	<tx:advice id="transactionAdvice" transaction-manager="platformTransactionManager">
+		<tx:attributes>
+			<tx:method name="persist*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="false" />
+			<tx:method name="save*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="false" />
+			<tx:method name="update*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="false" />
+			<tx:method name="delete*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="false" />
+			<tx:method name="remove*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="false" />
+			
+			<tx:method name="load*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="true" />
+			<tx:method name="get*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="true" />
+			<tx:method name="find*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="true" />
+			<tx:method name="query*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<!-- 使用 aop:config 实现将 Advice 织入到 相应的 连接点中 -->
+	<aop:config>
+		<!-- 事务对应的切点应该选择到 Service 层次，这里 为了简化步骤 暂时 选择了 Dao 层次 -->
+		<aop:pointcut  id="tx-pointcut" expression="execution(* ecut.jdbc.dao.*.*(..))"/>
+		<!-- 声明事务控制 切面 -->
+		<aop:advisor pointcut-ref="tx-pointcut" advice-ref="transactionAdvice"/>
+	</aop:config>
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<!-- 数据源 -->
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+	<bean id="customerDao" class="ecut.jdbc.dao.CustomerDao" >
+		<property name="jdbcTemplate" ref="jdbcTemplate" />	
+	</bean>
+	
+	<bean id="customerService" class="ecut.jdbc.service.CustomerService" >
+		<property name="customerDao" ref="customerDao" />
+	</bean>
+	
+	<bean id="customerController" class="ecut.jdbc.controller.CustomerController" >
+		<property name="customerService" ref="customerService" />
+	</bean>
+
+</beans>

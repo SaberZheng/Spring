@@ -1,0 +1,445 @@
+
+自动装配(autowiring): 将某个Bean实例中所引用的其它的Bean自动注入到当前Bean实例中
+
+	no(default): 默认值，即不启动自动装配，需要显示地引用相应的bean
+	
+		<bean id="date" class="java.util.Date" />
+
+		<bean id="" class="" >
+			<property name="" ref="date" />  <!-- 显式引用Bean，setters -->
+			<constructor-arg name="" ref="" /> <!-- constructor -->
+		</bean> 
+		
+		<bean id="dog" class="ecut.ioc.autowiring.Dog" >
+			<property name="name" value="拉的多不多" />
+		</bean>
+		
+		<bean id="p" class="ecut.ioc.autowiring.Person" >
+			<property name="id" value="1001" />
+			<property name="name" value="华安" />
+			<property name="wangcai" ref="dog" /> 
+		</bean> 
+	
+	byName: 根据属性名称和被引用的bean名称来实现自动注入(setter)
+	
+		<bean id="xxx" class="" />
+	
+		<bean id="" class="" autowire="byName" />
+		
+		--> 如果在被装配的bean中含有xxx属性(实际上是setter方法)，
+			则会自动把id为xxx的bean装配上来
+	
+	byType: 根据属性类型和被引用的bean的类型来实现自动注入(setter)
+	
+		<bean id="" class="xxx" />
+	
+		<bean id="" class="" autowire="byType" />
+		
+		--> 如果在被装配的bean中含有一个xxx类型的属性，
+			则会自动把类型为xxx的bean装配上来
+		--> 但是如果含有多个xxx类型的bean，则抛出
+			NoUniqueBeanDefinitionException
+	
+	constructor: 根据构造方法的参数类型和被引用的Bean的类型实现自动装配(constructor)
+		
+		<bean id="" class="" />
+		
+		<bean id="" class="" autowire="constructor" />
+		
+		当存在多个同种类型的Bean与构造方法中的参数类型相同时:
+
+			如果某Bean的名称跟参数的名称一致，则根据名称进行自动装配
+			
+			如果这些Bean的名称跟参数的名称都不相同，则不再执行自动装配。
+			但是，也不抛出异常
+
+		当且仅当与构造方法中的参数类型相同的Bean只有一个时，
+		此时根据类型进行自动装配		
+		
+		不使用构造实现自动装备时的写法
+		<bean id="dog" class="ecut.ioc.autowiring.Dog" >
+			<property name="name" value="拉的多不多" />
+		</bean>
+		
+		<bean id="p" class="ecut.ioc.autowiring.Person" >
+			<property name="id" value="1001" />
+			<property name="name" value="华安" />
+			<constructor-arg name="wangcai" ref="dog" /> 
+		</bean> 
+		使用构造方法自动装备
+		创建person实例时，使用带参数的构造，并为参数注入指定类型的bean
+		<bean id="dog" class="ecut.ioc.autowiring.Dog" >
+			<property name="name" value="拉的多不多" />
+		</bean>
+		
+		<bean id="p" class="ecut.ioc.autowiring.Person" autowire="constructor"  >
+			<property name="id" value="1001" />
+			<property name="name" value="华安" />
+		</bean> 
+通配符：
+	
+	?(匹配单个字符)，*(匹配除/外任意字符)，**/(匹配任意多个目录)	
+
+加载配置文件：
+	String configLocations = "classpath:ecut/**/constructor-autowiring.xml" ;
+		
+	AbstractApplicationContext container = new ClassPathXmlApplicationContext( configLocations );
+	
+	ecut.ioc.autowiring包中有一个constructor-autowiring.xml
+	
+	* 匹配同一级别路劲的多个字符，ecut/*/autowiring/constructor-autowiring.xml
+	
+	** 匹配多级路劲中的多个字符，ecut/**/constructor-autowiring.xml
+	
+	?仅匹配一个字符
+	
+	classpath*:ecut/**/beans.xml
+	
+	如果多个包中都beans.xml文件，并且期望全部加载它们，则可以写作classpath*:ecut/**/beans.xml
+	
+	ecut包中有beans.xml
+	
+	ecut.ex包中有beans.xml
+	
+	ecut.xxx.yyyy包中有beans.xml
+jar库：
+
+	Spring核心必须依赖的库：
+		
+		commons-logging-1.1.1.jar
+
+	Spring IoC部分核心库：
+	
+		spring-beans-4.3.9.RELEASE.jar
+		spring-context-4.3.9.RELEASE.jar
+		spring-context-support-4.3.9.RELEASE.jar
+		spring-core-4.3.9.RELEASE.jar
+		spring-expression-4.3.9.RELEASE.jar
+		
+		spring-web-4.3.9.RELEASE.jar      ------> 支持在Web环境中使用Spring IoC容器
+
+	Spring AOP部分核心库：
+	
+		spring-aop-4.3.9.RELEASE.jar
+		spring-aspects-4.3.9.RELEASE.jar
+		
+	Spring AOP需要依赖于aspectj库:	
+	
+		aspectjrt.jar
+		aspectjweaver.jar
+		
+
+OOP：Object-Oriented Programming，面向对象程序设计
+静态的
+一旦类写死了就不能改变了，要更改就得修改代码重新编译
+父类类型引用指向对象，动态性
+AOP：Aspect-Oriented Programming，面向切面编程
+以oop为基础修复本身不具备的能力具有动态语言的特点，aop和oop互为补充的
+Oriented: 以.....为导向的
+Based: 以.....为基础的
+JavaScript 基于对象的（object based）js变量的特点不主动不拒绝不负责（来者不拒，给啥是啥），弱类型语言，动态性
+	代理目标: 哪个对象将被其它对象所代理(谁将被别人代理)  [target]
+	
+	代理对象: 哪个对象将要去代理别的对象(谁将去代理别人)  [proxy]
+
+	执行点：一个可以执行的方法在执行时就是一个执行点
+	
+	方位信息：
+	
+		一个方法执行前(before)
+		一个方法执行后(after)
+		一个方法执行返回后(after-returing)
+		一个方法抛出异常后(after-throwing)
+		一个方法执行前后(around)
+
+	连接点(Join Point)：执行点 + 方位信息
+	
+	切点(Pointcut)：用来筛选特定的连接点(确定在哪里加)
+	
+	Advice：在切点选中的连接点加入的代码就是advice(确定加什么)
+		
+		包含了横切逻辑
+
+	切面(Advisor)：切点 + Advice (在哪里、加什么)
+	
+	织入(Weaver)：把Advice加入到Pointcut选择的连接点的过程称作织入
+	
+	引入(Introduction)：
+	
+	--> 动态代理：
+	
+		final Object target = new FoxconnFactory();	// 代理目标
+		Class<?> targetClass = target.getClass();
+		ClassLoader loader = targetClass.getClassLoader();
+		Class<?>[] interfaces = targetClass.getInterfaces();
+		
+		// 请求指派器
+		InvocationHandler handler = new InvocationHandler() {
+			@Override
+			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+				// advice
+				Object result = method.invoke(target, args);
+				// advice
+				return result;
+			}
+		};
+		
+		// 代理对象，其代理类(在运行阶段动态产生(没有.java文件、没有.class 文件)
+		Object proxy = Proxy.newProxyInstance(loader, interfaces, handler);
+		
+		if (proxy instanceof xxx) {
+			// 强制类型转换并调用相应函数
+		}
+	
+	--> JDK动态代理的内部实现：
+	
+		public class Proxy  {
+			protected  InvocationHandler h; 
+			protected  Proxy(InvocationHandler h)  {
+				this.h = h;
+			}
+		}
+		
+		public class $Proxy0  extends  Proxy  implements XXX {
+
+			public $Proxy0(InvocationHandler h){
+				super( h );
+			}	
+
+			private static Method m0;
+			private static Method m1;
+			private static Method m2;
+			private static Method m3;
+			/* ..........  */
+
+			static {
+				Class<?> c = $Proxy0.class ;
+				m0 = c.getMethod("equals", Object.class);
+				m1 = c.getMethod("toString");
+				m2 = c.getMethod("hashCode");
+				m3 = c.getMethod("...");
+				/* ..........  */
+			}
+
+			public final boolean equals(Object another) {
+				Object[] args = new Object[]{ another };
+				return h.invoke(this, m0, args);
+			}
+
+			public final String  toString() {
+				Object[] args = new Object[0];
+				return h.invoke(this, m1, args);
+			}
+
+			public final int hashCode() {
+				Object[] args = new Object[0];
+				return h.invoke(this, m2, args);
+			}
+			
+			/* ..........  */
+		}
+		
+
+动态代理的方式：
+
+	使用XML文件中的aop命名空间：
+		
+		使用aop:advisor标签来声明切面:
+		
+			<bean id="xx" class="" />
+		
+			<aop:config proxy-target-class="true">
+				<aop:pointcut id="aa" expression="execution()" />
+				<aop:advisor pointcut-ref="aa" advice-ref="xx"/>
+				...
+			</aop:config>
+			
+			-->	proxy-target-class指示采用哪种方式创建代理对象：
+				为false时，表示采用JDK动态代理方式
+				为true时，表示采用cglib方式
+			--> aop:pointcut用来声明切点，其中expression格式为：
+				execution(修饰符 包名.类名.方法名(参数列表))
+				*表示任意多个，..表示任意多个或不存在
+			--> aop:advisor用来声明切面，
+				其中pointcut-ref用来引用切点，
+				而advice-ref用来引用advice的bean
+				对于advice：
+					需要实现相应的接口：
+						BeforeAdvice
+						MethodBeforeAdvice
+						AfterAdvice
+						AfterReturningAdvice
+						ThrowsAdvice
+						MethodInterceptor
+		
+		使用aop:aspect标签来声明一组切面:
+			
+			<!-- 包含了要在某些连接点中需要织入的代码 -->
+			<bean id="xxx" class="" />
+			
+			<aop:config proxy-target-class="true" >
+				<aop:aspect ref="xxx">
+					<aop:before pointcut-ref="" method=""/> 
+					<aop:around pointcut-ref="" method=""/>
+					<aop:after-throwing pointcut-ref="" method="" throwing=""/>
+					<aop:after-returning pointcut-ref="" method="" returning=""/>
+					<aop:after pointcut-ref="" method="" /> 
+				</aop:aspect>
+			</aop:config>
+			
+			--> aop:aspect的ref引用含有被织入代码的bean
+			
+			--> bean类的参数设置：
+			
+				如果需要访问连接点信息，需要加入一个JoinPoint类型的对象:
+				
+					// 获得当前的连接点对应的方法的签名
+					Signature signature = point.getSignature(); 
+					// 获得方法的名称
+					String name = signature.getName(); 
+				
+				如果需要运行代理目标(如around)，需要加入一个ProceedingJoinPoint类型的对象
+				ProceedingJoinPoint是JoinPoint接口的子接口：
+					
+					// 运行代理目标的方法
+					Object result = point.proceed();
+				
+				如果需要获得返回值(如afterReturing)，需要加入一个Object类型的对象，
+				并在returning中引入
+				
+				如果需要获得异常信息(如afterThrowing)，需要加入一个Throwable类型的对象，
+				并在throwing中引入
+		
+	使用注解声明：
+	
+		要使用注解，需要在配置文件中添加对注解的支持：
+			
+			<context:component-scan base-package="包名" />
+ 	
+			<!-- 为注解提供自动产生代理对象的支持 -->
+			<aop:aspectj-autoproxy proxy-target-class="true" />
+	
+		@org.springframework.stereotype.Controller: 
+			
+			专门用来标注控制层的组件
+	   
+			@Controller
+			public class StudentController { }
+			等价于xml文件中的:
+			<bean id="studentController" class="StudentController" />
+			
+		@org.springframework.stereotype.Service: 
+		
+			专门用来标注业务逻辑层的组件
+		
+			@Service
+			public class StudentService { }
+			等价于xml文件中的:
+			<bean id="studentService" class="StudentService" />
+		
+		@org.springframework.stereotype.Repository: 
+		
+			专门用来标注数据访问层的组件
+		
+			@Repository
+			public class StudentDao { }
+			等价于xml文件中的:
+			<bean id="studentDao" class="StudentDao" />
+	
+		@org.springframework.stereotype.Component: 
+		
+			可以标注任意的组件
+		
+			--> 当不能确定到底是Controller、Service、Repository
+				中的那种类型时，适用，例如在切面中使用
+			
+			@Component
+			public class StudentAspect { }
+			
+		--> 以上组件注解如果不指定value，则按照以下规则：
+			类名的首字母变小写
+		
+		@org.springframework.beans.factory.annotation.Autowired: 
+		
+			自动装配，默认按照类型对某个属性进行装配
+		
+			@Controller
+			public class StudentController {
+				@Autowired
+				private StudentService studentService;
+			}
+		
+		@org.springframework.beans.factory.annotation.Qualifier：
+			
+			与Autowired连用一起实现按照名称进行自动装配 
+		
+			@Controller
+			public class StudentController {
+				@Autowired
+				@Qualifier("studentService")
+				private StudentService studentService ;
+			}
+			
+			--> 不指定value则按照同样规则的value
+		
+		@org.aspectj.lang.annotation.Aspect: 
+		
+			用来标注切面对应的类
+		
+			@Component
+			@Aspect
+			public class StudentAspect { }
+		
+		@org.springframework.core.annotation.Order：
+		
+			用来指定织入顺序
+			
+		@org.aspectj.lang.annotation.Aspect：
+			
+			用来标注一个@Component是一个Aspect类
+		
+		@org.aspectj.lang.annotation.Pointcut：
+			
+			用来单独声明一个切点
+			
+			--> 用声明方法的形式来声明一个切点，切点名称就是方法名，
+				切点表达式在注解中指定
+
+		@org.aspectj.lang.annotation.Before：
+		
+			相当于<aop:before>，value中指定切点表达式或切点名
+		
+		@org.aspectj.lang.annotation.Around：
+			
+			相当于<aop:around>，value中指定切点表达式或切点名
+		
+		@org.aspectj.lang.annotation.AfterReturning：
+			
+			相当于<aop:after-returning>，
+			pointcut指定切点表达式或切点名，
+			returning指定返回变量
+		
+		@org.aspectj.lang.annotation.AfterThrowing：
+			
+			相当于<aop:after-throwing>
+			pointcut指定切点表达式或切点名，
+			throwing指定异常变量
+		
+		@org.aspectj.lang.annotation.After：
+			
+			相当于<aop:after>，value中指定切点表达式或切点名
+		
+	织入顺序：
+		
+		对于多个aop:aspect来说可以通过order属性的值来织入顺序
+		对于同一个aop:aspect内部的切面来说，根据其配置文件的书写顺序
+		
+		对于在同一个方位中织入Advice的多个aop:advisor，也可以使用order属性来确定织入顺序
+		
+		在注解中通过@org.springframework.core.annotation.Order用来指定织入顺序
+
+	
+
+	
+	
+	

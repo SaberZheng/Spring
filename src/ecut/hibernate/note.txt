@@ -1,0 +1,33 @@
+
+    Spring核心必须依赖的库：commons-logging-1.1.1.jar
+    Spring IoC部分核心库：
+
+　　　　spring-beans-4.3.9.RELEASE.jar
+　　　　spring-context-4.3.9.RELEASE.jar
+　　　　spring-context-support-4.3.9.RELEASE.jar
+　　　　spring-core-4.3.9.RELEASE.jar
+        　   spring-expression-4.3.9.RELEASE.jar
+        　   spring-web-4.3.9.RELEASE.jar      ------> 支持在Web环境中使用Spring IoC容器
+
+    Spring AOP部分核心库：
+
+        　　spring-aop-4.3.9.RELEASE.jar
+        　　spring-aspects-4.3.9.RELEASE.jar
+
+    Spring AOP需要依赖于aspectj库:    
+
+        　　aspectjrt.jar
+       　　 aspectjweaver.jar
+	Spring ORM部分核心库：
+		spring-orm-4.3.9.RELEASE.jar
+
+
+
+HIBNATE 
+
+数据源c3p0
+
+ehcache
+
+
+

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	<bean id="panda" class="ecut.aop.xml.Panda" p:name="阿宝" />
+	
+	<bean id="pandaAdvices" class="ecut.aop.xml.PandaAdvices" />
+	
+	<bean id="animalAdvices" class="ecut.aop.xml.AnimalAdvices" />
+	
+	<aop:config proxy-target-class="true" >
+	
+		<!-- 声明一个切点 ( 属于 整个 aop:config 标记内都可以使用，因此称作 全局切点 ) -->
+		<aop:pointcut  id="my-pointcut" expression="execution(* ecut.aop.xml.Panda.*(..))" />
+		
+		<aop:aspect ref="pandaAdvices" order="150">
+			<aop:before pointcut-ref="my-pointcut" method="before"/> <!-- pandaAdvices.before() -->
+		</aop:aspect>
+		
+		<aop:aspect ref="animalAdvices" order="-250">
+			<aop:before pointcut-ref="my-pointcut" method="before2"/> <!-- pandaAdvices.before() -->
+			<aop:before pointcut-ref="my-pointcut" method="before1"/>
+		</aop:aspect>
+		
+	</aop:config>
+
+</beans>

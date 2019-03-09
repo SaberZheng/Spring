@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	<bean id="wk" class="ecut.aop.xml.Monkey" p:name="孙悟空" />
+	
+	<bean id="beforeAdvice" class="ecut.aop.xml.MonkeyBeforeAdvice" />
+	
+	<bean id="aroundAdvice" class="ecut.aop.xml.MonkeyAroundAdvice" />
+	
+	<bean id="afterAdvice" class="ecut.aop.xml.MonkeyAfterAdvice" />
+
+	<!-- proxy-target-class 指示 采用 那种方式 创建 代理对象 -->
+	<!-- proxy-target-class="false" 不采用 cglib 方式，而是采用 JDK 动态代理方式 ，若没有实现接口会通过 cglib 方式-->
+	<!-- proxy-target-class="true" 采用 cglib 方式（当一个类没有实现任何接口时，必须采用这种方式）动态产生字节码-->
+	<aop:config proxy-target-class="true" >
+	
+		<!-- 声明一个切点 -->
+		<!-- 参数个数不确定的 ，..可以匹配任意个数的参数-->
+		<aop:pointcut  id="my-pointcut" expression="execution(* ecut.aop.xml.Monkey.*(..))" />
+		<!-- 切面 ( Advisor ) : 切点（Pointcut） + Advice              【 在哪里 、加什么 】 -->
+		<!-- 一个 aop:advisor 就表示一个 切面   -->
+		<aop:advisor pointcut-ref="my-pointcut" advice-ref="beforeAdvice" />
+		
+		<!-- pointcut=“切点表达式” 切点表达式 execution(修饰符 返回类型 包名.类名.方法名(参数列表) 异常类型) -->
+		<!-- <aop:advisor pointcut="execution(* ecut.aop.xml.Monkey.*(..))" advice-ref="beforeAdvice" /> -->
+		
+		<aop:advisor pointcut-ref="my-pointcut" advice-ref="aroundAdvice" />
+		
+		<aop:advisor pointcut-ref="my-pointcut" advice-ref="afterAdvice" />
+		
+	</aop:config>
+
+</beans>

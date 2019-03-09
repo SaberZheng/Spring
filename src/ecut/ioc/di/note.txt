@@ -1,0 +1,152 @@
+applicationContext.xml
+ApplicationContext相当于一个工厂或者是容器
+xml文件什么都不做（文本文件），由虚拟机解析文件
+The IoC Container :
+
+	IoC : Inverse of Control ，控制反转（控制权的翻转）
+	控制：对对象的创建、对对象的属性赋值等一系列操作本来应该是我们做的事情
+	
+		Java Application : 
+		
+			Date birthdate = new Date();
+	
+			Student s = new Student();
+			
+			s.setId( 1001 );
+			s.setName( "张三丰" );
+			s.setGender( '男' ) ;
+			
+			s.setBirthdate( birthdate );
+			
+		反转:
+			将对对象的创建、为属性赋值等操作的权限反转给容器，通常我们将控制权反转给Ioc container(ioc 容器)
+			Java程序中自主控制权限，包括创建对象，设置对象的值。逆转交给容器来做，做之前交给容器来做，文件名和路径没有要求
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~	
+		spring 容器 给读取配置文件生产相应的对象
+		配置源数据 xml文件或者是注解，容器根据所提供的配置去生产对象
+		你的业务对象如果我们依赖于另一个对象，需要拿过来的时候，那个对象就是你的业务对象
+		BeanFactory就表示一个ioc容器
+		XmlBeanFactory是BeanFactory的实现类
+		
+		ApplicationContext是BeanFactory的子接口
+		ClassPathXmlApplicationContext是ApplicationContext的实现类
+		
+		WebApplicationContext是ApplicationContext的子接口
+		XmlWebApplicationContext是WebApplicationContext的实现类
+		
+		
+		
+			你的业务对象
+			<bean id="d" class="java.util.Date" />
+		
+			<bean id="s" class="io.spring.ioc.base.Student" >
+				<property name="id" value="1001" />
+				<property name="name" value="张三丰" />
+				<property name="gender" value="男" />
+				<property name="birthdate" ref="d" />
+			</bean>
+		
+		Spring IoC Container :
+		
+			String configLocations = "classpath:beans.xml" ;
+		
+			AbstractApplicationContext container = new ClassPathXmlApplicationContext( configLocations );
+		
+			Student s = container.getBean( "s" , Student.class ); 
+		
+	
+	DI : Dependency Injection ，依赖注入
+			birthdate需要用到date类型的一个对象，引用了d的对象就是一种依赖注入
+			s.setBirthdate( d )依赖一个date类型的对象，注入就是将date类型的对象set进去
+			<bean id="d" class="java.util.Date" />
+		
+			<bean id="s" class="io.spring.ioc.base.Student" >
+				.......
+				<property name="birthdate" ref="d" /> <!-- s.setBirthdate( d ) ; -->
+			</bean>
+	也可以指定内部的bean
+	
+	<bean id="s" class="ecut.ioc.base.Student">
+		.......
+		<property name="birthdate">
+			<bean class="java.util.Date" /><!-- s.setBirthdate( new Date ) ; -->
+		</property> 
+	</bean>
+	
+	 Spring IoC Container :
+	 
+	 	    找官方参考文档中的 : Figure 7.1. The Spring IoC container
+	 	    
+	 	   Configuration Metadata ( "配置元数据" ) 用来 "告诉" Spring IoC 容器怎么产生对象
+	
+	
+	
+	注入方式: 
+	
+			setter 注入 : ( setter-base )，提供setter方法进行注入,依赖于无参构造和setter方法
+				使用property标记来来指定属性的注入值
+				Spring Framework 3.0 之前 :
+				
+							<bean id="date" class="java.util.Date" />
+	
+							<!-- setter -->
+							<bean id="customer" class="io.spring.ioc.di.Customer" >
+								<property name="id" value="1002" />
+								<property name="name" value="张翠山" />
+								<property name="gender" value="男" />
+								<property name="birthdate" ref="date" />
+							</bean>
+				
+				Spring Framework 3.0 开始支持 p 命名空间为属性注入值 ,依赖于无参构造和setter方法:
+				
+							<bean id="date" class="java.util.Date" />
+
+							<!-- setter -->
+							<bean id="customer" 
+									 class="io.spring.ioc.di.Customer" 
+									 p:id="1002" 
+									 p:name="张翠山"
+									 p:gender="男" 
+									 p:birthdate-ref="date" />
+				
+				
+			构造方法注入 : ( constructor-base )通过构造方法往里面传入值
+			
+					<bean id="date" class="java.util.Date" />
+
+					<!-- constructor -->
+					<bean id="customer"  class="io.spring.ioc.di.Customer" >
+						<constructor-arg name="id" value="1003" />
+						<constructor-arg name="name" value="殷素素" />
+						<constructor-arg name="gender" value="女" />
+						<constructor-arg name="birthdate" ref="date" />
+					</bean>
+					
+					public Customer(Integer id, String name, char gender, Date birthdate) {
+						super();
+						this.id = id;
+						this.name = name;
+						this.gender = gender;
+						this.birthdate = birthdate;
+					}
+			
+			
+	注入集合: 
+	
+			在 <property> 标签 内部 使用 set 、list 、map 、props 标签实现注入: normal-injection.xml
+			
+			使用 Spring 3.0 开始提供的 util 命名空间，结合 <property> 或 p 命名空间实现注入: util-injection.xml
+	
+	Bean 的创建方式:
+	
+			使用构造
+			
+			静态工程方法
+			
+			实例工厂方法
+			
+			使用 FactoryBean 方式
+	
+	
+	
+

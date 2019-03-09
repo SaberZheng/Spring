@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	<bean id="panda" class="ecut.aop.xml.Panda" p:name="阿宝" />
+	
+	<!-- pandaAdvices 中包含了要在 某些连接点 中需要织入的代码 -->
+	<bean id="pandaAdvices" class="ecut.aop.xml.PandaAdvices" />
+	
+	<aop:config proxy-target-class="true" >
+	
+		<!-- 声明一个切点 ( 属于 整个 aop:config 标记内都可以使用，因此称作 全局切点 ) -->
+		<aop:pointcut  id="my-pointcut" expression="execution(* ecut.aop.xml.Panda.*(..))" />
+		<!-- 声明的是一组切面 -->
+		<aop:aspect ref="pandaAdvices">
+		
+			<!-- 在 aop:aspect 标记内部的 aop:pointcut 被称作 局部切点，只能在同一个 aop:aspect 标记内使用-->
+			
+			<aop:before pointcut-ref="my-pointcut" method="before"/> <!-- pandaAdvices.before() method所引用的方法就是确定加什么代码 ，一个method就是一个Advice-->
+			
+			<aop:around pointcut-ref="my-pointcut" method="around"/>
+			
+			<aop:after-throwing pointcut-ref="my-pointcut" method="afterThrow" throwing="ex"/>
+			<!-- 通过指定returning这个属哦，将返回值绑定到这个参数上，需要和method中的参数名一致 -->
+			<aop:after-returning pointcut-ref="my-pointcut" method="afterReturn" returning="result"/>
+			
+			<aop:after  pointcut-ref="my-pointcut" method="after" /> <!-- pandaAdvices.after() 是无论抛并不抛出异常都要执行的Advice（类似finally）-->
+			
+		</aop:aspect>
+		
+	</aop:config>
+
+</beans>

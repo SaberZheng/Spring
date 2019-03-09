@@ -1,0 +1,40 @@
+
+
+
+	org.springframework.jdbc.core.JdbcTemplate 提供了 使用 JDBC 访问数据库的能力
+	
+	数据库驱动包
+	访问数据库所需要的jdbc的包
+	
+	
+	/**
+	 * 列出全部用户
+	 * 
+	 * @throws Exception
+	 */
+	public List<User> list() throws Exception {
+        List<User> userList =new ArrayList<User>();		
+		Connection conn = DBConnection.getConn();
+		System.out.println("列出全部用户");
+		String sql = "select * from user";
+		pstmt = conn.prepareStatement(sql);
+		ResultSet rs = pstmt.executeQuery();
+		while(rs.next()){
+            User user = new User();
+            user.setId(rs.getInt("id"));
+            user.setName(rs.getString("name"));
+            user.setPassword(rs.getString("password"));
+            user.setEmail(rs.getString("email"));
+            user.setBirthday(rs.getDate("birthday"));
+            user.setAge(rs.getInt("age"));
+            user.setMoney(rs.getFloat("money"));
+            userList.add(user);
+		}
+		return userList;
+	}
+	
+	int count =0;
+	while(rs.next){
+	mapRow(rs,count++)
+	}
+	

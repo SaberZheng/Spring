@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+	
+	<bean id="birthdate" class="java.util.Date" />
+	
+	<bean id="findFriend" class="java.util.Date" />
+
+	<bean id="user" class="ecut.ioc.collection.User">
+		<property name="id" value="1001" />
+		<property name="name" value="张三丰" />
+		
+		<!-- 注入 Set 集合 -->
+		<property name="hobby">
+			<set>
+				<value>吃饭</value>
+				<value>睡觉</value>
+				<value>泡妞/被泡</value>
+			</set>
+		</property>
+		
+		<!-- 注入 List 集合 -->
+		<property name="luckDay">
+			<list>
+				<!-- 如果不是基本数据类型及其包装类型，通过ref 来引用-->
+				<ref bean="birthdate"/>
+				<ref bean="findFriend"/>
+			</list>
+		</property>
+		
+		<!-- 注入 Map 集合 -->
+		<property name="score">
+			<map>
+				<entry key="前端" value="45" />
+				<entry key="后端" value="54" />
+			</map>
+		</property>
+		
+		<!-- 注入 Properties 集合 -->
+		<property name="address">
+			<props>
+				<prop key="软件楼">东理北门内，太谷路旁，软件楼一楼厕所边的那个门</prop>
+				<prop key="宿舍">东理南区研一好望角</prop>
+			</props>
+		</property>
+		
+	</bean>
+
+
+</beans>

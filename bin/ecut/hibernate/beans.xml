@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" >
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=utf8" />
+		<property name="username" value="root" />
+		<property name="password" value="123456" />
+	</bean>
+	
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" >
+		<!-- 注入数据源，用来获得数据库连接 -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- 注入 hibernate 的配置 ( 方言、二级缓存 、查询缓存) -->
+		<property name="hibernateProperties">
+			<props>
+				<!-- 指示数据库的基本信息 -->
+				<!--  
+				<prop key="hibernate.connection.driver_class" >com.mysql.jdbc.Driver</prop>
+				<prop key="hibernate.connection.url" >jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=UTF8</prop>
+				<prop key="hibernate.connection.username" >root</prop>
+				<prop key="hibernate.connection.password" >123456</prop>
+				-->
+				<!-- 启用二级缓存 -->
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
+				<!-- 启用查询缓存 -->
+				<prop key="hibernate.cache.use_query_cache" >true</prop>
+				<!-- 指定数据方言 类-->
+				<prop key="hibernate.dialect" >org.hibernate.dialect.MySQLDialect</prop>
+				<!-- 指示是否显示sql -->
+				<prop key="hibernate.show_sql" >true</prop>
+				<!-- 指示是否对sql格式化输出 -->
+				<prop key="hibernate.format_sql" >true</prop>
+			</props>
+		</property>
+		
+		<!-- 引入映射文件 -->
+		<!-- mappingResources 对应的是 String 数组，不支持 使用 通配符 ，下面的写法是错误的 -->
+		<!-- <property name="mappingResources" value="classpath:ecut/hibernate/entity/*.hbm.xml" /> -->
+		<!-- mappingLocations 对应的 是 Resource 数组 ，因此 支持 使用 通配符 -->
+		<property name="mappingLocations" value="classpath:ecut/hibernate/entity/*.hbm.xml"></property>
+		
+	</bean>
+	
+	<!-- 配置平台事务管理器 ，由HibernateTransactionManager类来完成事务管理-->
+	<bean id="platformTransactionManager" 
+			 class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<!-- 提供对事务的配置 ( Advice ) -->
+	<tx:advice id="transactionAdvice" transaction-manager="platformTransactionManager">
+		<tx:attributes>
+			<tx:method name="persist*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="false" />
+			<tx:method name="save*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="false" />
+			<tx:method name="update*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="false" />
+			<tx:method name="delete*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="false" />
+			<tx:method name="remove*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="false" />
+			
+			<tx:method name="load*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="true" />
+			<tx:method name="get*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="true" />
+			<tx:method name="find*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="true" />
+			<tx:method name="query*" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<!-- aop实现事务控制：使用 aop:config 实现将 Advice 织入到 相应的 连接点中 -->
+	<aop:config>
+		<aop:pointcut  id="tx-pointcut" expression="execution(* ecut.hibernate.service.*.*(..))"/>
+		<!-- 声明事务控制 切面 -->
+		<aop:advisor pointcut-ref="tx-pointcut" advice-ref="transactionAdvice"/>
+	</aop:config>
+	<!-- hibernate所有操作都是通过sessionFactory实现的 -->
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="customerDao" class="ecut.hibernate.dao.CustomerDao" >
+		<property name="hibernateTemplate" ref="hibernateTemplate" />	
+	</bean>
+	
+	<bean id="customerService" class="ecut.hibernate.service.CustomerService" >
+		<property name="customerDao" ref="customerDao" />
+	</bean>
+	
+	<bean id="customerController" class="ecut.hibernate.controller.CustomerController" >
+		<property name="customerService" ref="customerService" />
+	</bean>
+
+</beans>

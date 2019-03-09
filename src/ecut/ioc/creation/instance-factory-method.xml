@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+
+	<!-- 先 创建 Car 工厂 -->
+	<bean id="carFactory" class="ecut.ioc.creation.CarFactory" >
+		<constructor-arg name="brandName" value="BYD" />
+	</bean>
+	
+	<!-- 再 通过 工厂实例 ( carFactory ) 的 非静态方法来创建 Car -->
+	<bean id="car" factory-bean="carFactory" factory-method="create" />
+	
+</beans>

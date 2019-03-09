@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	<!-- 以前: 指定 class 是什么类型，就返回什么类型的实例 -->
+	<bean id="d" class="java.util.Date" />
+	
+	<!-- 以前: 指定 class 是什么类型，就返回什么类型的实例,且是使用无参构造 创建bean，则必须要有无参构造-->
+	<bean id="fox1" class="ecut.ioc.creation.Fox" >
+		<property name="id" value="A001" />
+		<property name="name" value="苏妲己" />
+	</bean>
+	
+	<!-- 这里: 指定的 class 是 XxxFactoryBean ，但是返回的却不是  XxxFactoryBean 类型的实例 -->
+	<!-- 而是返回了  XxxFactoryBean 内部的 getObject 方法所返回的那个实例 -->
+	<bean id="birthdate" class="ecut.ioc.creation.DateFactoryBean" >
+		<property name="year" value="1997" />
+		<property name="month" value="7" />
+		<property name="date" value="1" />
+		<property name="hour" value="12" />
+		<property name="minute" value="30" />
+		<property name="second" value="18" />
+	</bean>
+
+</beans>

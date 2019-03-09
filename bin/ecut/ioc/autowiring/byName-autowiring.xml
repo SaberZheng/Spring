@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+
+	<bean id="dog" class="ecut.ioc.autowiring.Dog" >
+		<property name="name" value="拉的多不多" />
+	</bean>
+
+	<bean id="wangcai" class="ecut.ioc.autowiring.Dog" >
+		<property name="name" value="旺财" />
+	</bean>
+
+	<!-- 根据 名称 实现 自动装配 ( setter ) -->
+	<bean id="huaan" class="ecut.ioc.autowiring.Person"  autowire="byName" >
+		<property name="id" value="1001" />
+		<property name="name" value="华安" />
+		<!-- <property name="wangcai" ref="wangcai" /> -->
+	</bean>
+
+</beans>

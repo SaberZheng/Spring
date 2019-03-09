@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	<bean id="date" class="java.util.Date" />
+
+	<!-- setter方法注入， 使用P命名空间（property namespace,需要提供p命名空间）-->
+	<bean id="customer" 
+			 class="ecut.ioc.di.Customer" 
+			 p:id="1002" 
+			 p:name="张翠山"
+			 p:gender="男" 
+			 p:birthdate-ref="date" />
+			 
+	<!-- 通过bean标记来声明这个bean
+		  使用bean标记的id或name属性来指定bean的名称 ，
+		 bean的class属相来指定bean的类型（具体的不是抽象的，不然需要修改abstract属性为true），
+		 name属性指定setter方法对应的名称，比如setBirthdate就写birthdate，
+		 ref属性用来指定需要引用的那个已经存在的bean的名称-->
+	<!--Customer c = new Customer(); -->
+	<!--<bean id="customer" class="ecut.ioc.di.Customer" > c.setId(1002)
+		<property name="id" value="1002" />
+		<property name="name" value="张翠山" />
+		<property name="gender" value="男" />
+		<property name="birthdate" ref="date" />
+	</bean>
+	-->
+	
+
+
+</beans>

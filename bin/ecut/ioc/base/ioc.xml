@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	<bean id="d" class="java.util.Date" />
+
+	<bean id="s" class="ecut.ioc.base.Student">
+		<property name="id" value="1001" />
+		<property name="name" value="张三丰" />
+		<property name="gender" value="男" />
+		<property name="birthdate"  ref="d" /> 
+	</bean>
+	
+	<!-- <bean id="s" class="io.spring.ioc.base.Student">
+		<property name="id" value="1001" />
+		<property name="name" value="张三丰" />
+		<property name="gender" value="男" />
+		<property name="birthdate" > 
+			<bean class="java.util.Date" />
+		</property> 
+	</bean>-->
+	
+</beans>

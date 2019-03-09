@@ -1,0 +1,256 @@
+
+Spring 核心必须依赖的库:
+
+		commons-logging-1.1.1.jar    :  http://commons.apache.org
+
+Spring IoC 部分核心库:
+
+		spring-beans-4.3.9.RELEASE.jar
+		spring-context-4.3.9.RELEASE.jar
+		spring-context-support-4.3.9.RELEASE.jar
+		spring-core-4.3.9.RELEASE.jar
+		spring-expression-4.3.9.RELEASE.jar
+		
+		spring-web-4.3.9.RELEASE.jar      ------> 支持 在 Web 环境中使用 Spring IoC 容器
+		
+Spring AOP 部分核心库:
+
+		spring-aop-4.3.9.RELEASE.jar
+		spring-aspects-4.3.9.RELEASE.jar
+
+Spring AOP 需要依赖于 aspectj 库:
+
+		aspectjrt.jar
+		aspectjweaver.jar
+		
+OOP：Object-Oriented Programming，面向对象程序设计
+静态的
+一旦类写死了就不能改变了，要更改就得修改代码重新编译
+父类类型引用指向对象，动态性
+
+
+
+了解aop的思想
+AOP：Aspect-Oriented Programming，面向切面编程
+以oop为基础修复本身不具备的能力具有动态语言的特点，aop和oop互为补充的
+Oriented: 以.....为导向的
+Based: 以.....为基础的
+JavaScript 基于对象的（object based）js变量的特点不主动不拒绝不负责（来者不拒，给啥是啥），弱类型语言，动态性
+
+
+	代理目标: 哪个对象将被其它对象所代理 ( 谁将被别人代理 )  [ target ]
+	
+	代理对象: 哪个对象将要去代理别的对象 ( 谁将去代理别人 )  [ proxy ]
+
+京东是富士康的代理商，代理商和代理对象都实现了苹果公司的这个接口（前提），富士康按照苹果公司要求生产，京东按照苹果公司的要求买手机，
+消费者在京东买手机，感觉是由京东提供的手机，实际上是由富士康生产的，由京东代理，这种思想就是代理思想
+Java代码实现
+希望京东代理富士康工厂然后把手机卖给消费者，京东是代理对象，富士康是代理商
+通过反射实现动态产生一个代理对象来代理富士康工厂
+JDK 动态代理:
+
+
+public class Proxy  {
+
+      protected  InvocationHandler h  ; // 父类中 public 修饰的 和 protected 修饰 都可以被子类继承
+
+      protected  Proxy( InvocationHandler h )  {
+              this.h = h ;
+      }
+ 
+}
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+package com.sun.proxy ;
+
+public class $Proxy0  extends  Proxy  implements AppleCompany {
+
+       public $Proxy0( InvocationHandler h ){
+              super( h );
+       }
+
+       private static Method m0 ;
+       private static Method m1 ;
+       private static Method m2 ;
+       private static Method m3 ;
+       
+       /* ..........  */
+
+       static {
+            Class<?> c = $Proxy0.class ;
+            m0 = c.getMethod( "equals" , Object.class );
+            m1 = c.getMethod( "toString" );
+            m2 = c.getMethod( "hashCode" );
+            m3 = c.getMethod( "create" );
+            
+            /* ..........  */
+       }
+
+        public final boolean equals( Object another ) {
+            Object[] args = new Object[]{ another  };
+            return h.invoke( this , m0 , args );
+        }
+
+        public final String  toString() {
+            Object[] args = new Object[ 0 ];
+            return h.invoke( this , m1 , args );
+        }
+
+        public final int hashCode() {
+            Object[] args = new Object[ 0 ];
+            return h.invoke( this , m2 , args );
+        }
+
+        public final  IPhone create()  {
+            Object[] args = new Object[ 0 ];
+            return h.invoke( this , m3 , args );
+        }
+
+}
+
+
+
+
+
+
+	执行点: 
+	
+		一个可以执行的方法在执行时就是一个执行点
+	
+	方位信息: 
+	
+		方法执行前 ( before ) 、
+		执行前和执行后，执行前后都有环绕，两个结合起来才可以使用，两者之间是有联系的 ( around ) 、
+		正常执行并返回后 ( after-returning ) 、
+		方法抛出异常后 ( after-throwing ) 、
+		方法执行后 ( after )
+		
+
+	连接点 ( Join Point ) : 执行点 + 方位信息 所有被拦截的方法被加入了其他的方法，通过代理的方法将想要加入的想要的代码，加入的代码和原有的代码形成了连接点
+	一个方法有5个连接点，四个方法就有20个
+	
+		一个正在执行的方法 (执行点) 执行前 (方位信息)
+		
+		一个正在执行的方法 (执行点) 执行前、后 (方位信息)
+		
+		一个正在执行的方法 (执行点) 执行并返回后 (方位信息)
+		
+		一个正在执行的方法 (执行点) 执行抛出异常后 (方位信息)
+		
+		一个正在执行的方法 (执行点) 执行后 (方位信息)
+
+	切点 ( Pointcut ) : 用来 筛选 连接点 的条件就是切点               【 确定 在哪里加 】
+	在那些方法里面加入代码
+	where id = 1  就是切点
+			select * from t_customer ; // 10亿
+			
+			select * from t_customer where id = 1 ; // 根据主键返回单个记录
+	
+	Advice : 在 切点 选中的 连接点 "加入" 的 代码 就是 Advice           【确定 加什么 】
+	
+	切面 ( Advisor ) : 切点（Pointcut） + Advice              【 在哪里 、加什么 】
+	
+	织入 ( Weaver ) : 把 Advice 加入到 Pointcut 选择的 连接点 的过程称作 织入 
+	
+	引入 ( Introduction ) : 
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+在spring 框架中怎么使用
+	使用 XML 文件中的 aop 命名空间:
+	
+		使用 aop:advisor 标签来声明切面:
+		
+				<bean id="wk" class="io.spring.aop.xml.Monkey" p:name="孙悟空" />
+	
+				<bean id="beforeAdvice" class="io.spring.aop.xml.MonkeyBeforeAdvice" />
+				
+				<aop:config proxy-target-class="true" >
+		
+					<aop:pointcut  id="my-pointcut" expression="execution(* io.spring.aop.xml.Monkey.*(..))" />
+			
+					<aop:advisor pointcut-ref="my-pointcut" advice-ref="beforeAdvice" />
+				
+				</aop:config>
+	
+		使用 aop:aspect 标签来声明一组切面:
+		
+				<bean id="panda" class="io.spring.aop.xml.Panda" p:name="阿宝" />
+				<bean id="pandaAdvices" class="io.spring.aop.xml.PandaAdvices" />
+				
+				<aop:config proxy-target-class="true" >
+				
+					<aop:pointcut  id="my-pointcut" expression="execution(* io.spring.aop.xml.Panda.*(..))" />
+					
+					<aop:aspect ref="pandaAdvices">
+						<aop:before pointcut-ref="my-pointcut" method="before"/> <!-- pandaAdvices.before() -->
+						<aop:around pointcut-ref="my-pointcut" method="around"/>
+						<aop:after-throwing pointcut-ref="my-pointcut" method="afterThrow" throwing="ex"/>
+						<aop:after-returning pointcut-ref="my-pointcut" method="afterReturn" returning="result"/>
+						<aop:after  pointcut-ref="my-pointcut" method="after" /> <!-- pandaAdvices.after() -->
+					</aop:aspect>
+					
+				<aop:config>
+				
+				
+	使用 注解 声明:
+	
+			@org.aspectj.lang.annotation.Aspect 用来标注 一个 @Component 是 一个 Aspect 类
+			
+			@org.aspectj.lang.annotation.Pointcut 用来单独声明一个切点
+
+			@org.aspectj.lang.annotation.Before 相当于 <aop:before>
+			
+			@org.aspectj.lang.annotation.Around 相当于 <aop:around>
+			
+			@org.aspectj.lang.annotation.AfterReturning 相当于 <aop:after-returning>
+			
+			@org.aspectj.lang.annotation.AfterThrowing 相当于 <aop:after-returning>
+			
+			@org.aspectj.lang.annotation.After 相当于 <aop:after>
+	
+	
+	织入顺序: 
+		before 一定在 after之前执行
+		同一个aspect里面按照顺序执行，若为方位信息一致，默认谁在前谁先执行，
+		不在同一个aspect里面按照顺序执行，若为方位信息一致，默认谁在前谁先执行，
+		a>、对于多个 <aop:aspect> 来说 可以通过 order 属性的值 来织入顺序 ( 按照 从小 到大 排列 ) 无需按照顺序排只要有大小之分就好了
+		数字越大越靠后执行
+				<aop:config proxy-target-class="true" >
+				
+					<aop:pointcut  id="my-pointcut" expression="execution(* io.spring.aop.xml.Panda.*(..))" />
+			
+					<aop:aspect ref="pandaAdvices" order="100" >
+						<aop:before pointcut-ref="my-pointcut" method="before"/>
+					</aop:aspect>
+					
+					<aop:aspect ref="animalAdvices" order="10" >
+						<aop:before pointcut-ref="my-pointcut" method="before1"/>
+					</aop:aspect>
+					
+				</aop:config>
+	
+
+		b>、对于在同一个 方位中 织入 Advice 的多个 <aop:advisor>  ，也可以使用 order 属性来确定织入顺序
+		
+					<bean id="wk" class="io.spring.aop.xml.Monkey" p:name="孙悟空" />
+	
+					<bean id="beforeAdvice" class="io.spring.aop.xml.MonkeyBeforeAdvice" />
+					
+					<bean id="anotherAdvice" class="io.spring.aop.xml.MonkeyAnotherAdvice" />
+					
+					<aop:config proxy-target-class="true" >
+					
+						<aop:pointcut  id="my-pointcut" expression="execution(* io.spring.aop.xml.Monkey.*(..))" />
+						
+						<aop:advisor pointcut-ref="my-pointcut" advice-ref="beforeAdvice" order="10000"/>
+						
+						<aop:advisor pointcut-ref="my-pointcut" advice-ref="anotherAdvice" order="0"/>
+						
+					</aop:config>
+
+		c>、在 注解中通过 @org.springframework.core.annotation.Order 用来指定 织入顺序
+

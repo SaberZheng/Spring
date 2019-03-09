@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+ 	<!-- 调用无参构造 -->
+	<bean id="fox1" class="ecut.ioc.creation.Fox" >
+		<property name="id" value="A001" />
+		<property name="name" value="苏妲己" />
+	</bean>
+	<!-- 使用名称调用有参构造 ，建议使用可读性好-->
+	<bean id="fox2" class="ecut.ioc.creation.Fox" >
+		<constructor-arg name="id" value="B001" />
+		<constructor-arg name="name" value="雪山飞狐" />
+	</bean>
+	<!-- 使用索引调用有参构造 -->
+	<bean id="fox3" class="ecut.ioc.creation.Fox" >
+		<constructor-arg index="0" value="B002" />
+		<constructor-arg index="1" value="旋涡鸣人" />
+	</bean>
+</beans>

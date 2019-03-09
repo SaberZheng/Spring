@@ -1,0 +1,117 @@
+
+两种方式使用ioc容器：配置文件、注解
+
+标注组件的
+	@org.springframework.stereotype.Controller : 专门用来 标注 控制层的组件
+   
+   		@Controller
+		public class StudentController {
+		
+		}
+		
+		等价于 xml 文件中的:
+		
+		<bean id="studentController" class="io.spring.aop.annotation.StudentController" />
+		
+
+	@org.springframework.stereotype.Service : 专门用来标注 业务逻辑层 的组件
+	
+		@Service
+		public class StudentService {
+		
+		}
+		
+		等价于 xml 文件中的:
+		
+		<bean id="studentService" class="io.spring.aop.annotation.StudentService" />
+	
+	@org.springframework.stereotype.Repository : 专门用来 标注 数据访问层 的 组件
+	
+		@Repository
+		public class StudentDao {
+		
+		}
+
+		等价于 xml 文件中的:
+		
+		<bean id="studentDao" class="io.spring.aop.annotation.StudentDao" />
+
+		
+	@org.springframework.stereotype.Component : 可以标注任意的组件
+	
+		 当不能确定到底是 Controller 、Service 、Repository 中的那种类型时，适用
+		
+		@Component
+		public class StudentAspect {
+		
+		}
+	
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	标注自动装备的
+	
+	@org.springframework.beans.factory.annotation.Autowired : 默认按照类型对某个属性进行装配
+	
+	
+				@Controller
+				public class StudentController {
+					
+					@Autowired
+					private StudentService studentService ;
+	
+				}
+	
+	@org.springframework.beans.factory.annotation.Qualifier 与 Autowired 连用一起实现 按照名称进行自动装配 
+	
+				@Controller
+				public class StudentController {
+					
+					@Autowired
+					@Qualifier( "studentService" )
+					private StudentService studentService ;
+	
+				}
+	
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	首先使用Component注解要让spring容器知道有一个类存在，使用注解对顺序控制没有xml好
+	@org.aspectj.lang.annotation.Aspect : 用来标注 切面 对应的类
+	
+			@Component
+			@Aspect
+			public class StudentAspect {
+			
+			}
+	
+	@org.springframework.core.annotation.Order 用来指定 织入顺序
+	
+			@Component
+			@Aspect
+			@Order( 100 )
+			public class StudentAspect {
+			
+			}
+			
+			@Component
+			@Aspect
+			@Order( 1 )
+			public class PersonAspect {
+			
+			}
+	
+	
+		@org.aspectj.lang.annotation.Pointcut 用来单独声明一个切点
+
+		@org.aspectj.lang.annotation.Before 相当于 <aop:before>
+			
+		@org.aspectj.lang.annotation.Around 相当于 <aop:around>
+			
+		@org.aspectj.lang.annotation.AfterReturning 相当于 <aop:after-returning>
+			
+		@org.aspectj.lang.annotation.AfterThrowing 相当于 <aop:after-returning>
+			
+		@org.aspectj.lang.annotation.After 相当于 <aop:after>
+		
+		
+	
+	
+	
+	
