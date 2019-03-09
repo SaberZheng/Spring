@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
  * 实现技术可以是: Servlet 、Struts 、Spring MVC
  * @Controller("sc") value ="sc" 相当于bean的名称是sc,默认名称是 studentController
  */
+
 @Controller
 public class StudentController {
 	
